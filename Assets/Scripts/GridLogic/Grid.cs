@@ -15,6 +15,8 @@ namespace Test.GridLogic
         private readonly IInputProvider _input;
         private readonly IFileReader _reader;
 
+        private readonly int _gridSize;
+
         public int[,] CurrentGrid { get; }
 
         private Vector2Int _currentPosition;
@@ -24,12 +26,14 @@ namespace Test.GridLogic
             _input = input;
             _reader = reader;
 
-            if (reader.TotalLines < commonSettings.GridSize || reader.TotalWidth < commonSettings.GridSize)
+            _gridSize = commonSettings.GridSize;
+
+            if (reader.TotalLines < _gridSize || reader.TotalWidth < _gridSize)
                 throw new Exception("Grid size in file must be greater than or equal to commonSettings.GridSize");
 
             _input.OnInput += InputChanged;
 
-            CurrentGrid = new int[commonSettings.GridSize, commonSettings.GridSize];
+            CurrentGrid = new int[_gridSize, _gridSize];
             _currentPosition = GetGridRandomStartPosition(_reader.TotalWidth, _reader.TotalLines);
             DebugOutputCurrentCenterPosition();
 
@@ -66,8 +70,9 @@ namespace Test.GridLogic
 
         private void DebugOutputCurrentCenterPosition()
         {
-            int x = MathUtils.Repeat(_currentPosition.x + 1, _reader.TotalWidth);
-            int y = MathUtils.Repeat(_currentPosition.y + 1, _reader.TotalLines);
+            int halfGridSize = _gridSize / 2;
+            int x = MathUtils.Repeat(_currentPosition.x + halfGridSize, _reader.TotalWidth);
+            int y = MathUtils.Repeat(_currentPosition.y + halfGridSize, _reader.TotalLines);
             Debug.Log($"Start position: x - {x}, y - {y}");
         }
 
